@@ -5,9 +5,7 @@ import com.example.spring_mongodb.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -18,6 +16,10 @@ public class UserController {
 
     @PostMapping("/addUser")
     public String saveUser(@RequestBody User user){
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        user.setCreateDate(now);
+        user.setUpdateDate(now);
         repository.save(user);
         return "Added user with id: " + user.getId();
     }
@@ -40,7 +42,12 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public String updateUser(@PathVariable int id,@RequestBody User user){
+        Optional<User> olduser = repository.findById(id);
+        user.setCreateDate(olduser.get().getCreateDate());
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
         user.setId(id);
+        user.setUpdateDate(now);
         repository.save(user);
         return "user update with id:" +id;
     }
